@@ -17,6 +17,7 @@ import {
   SPACING,
 } from '../theme/theme';
 import ImageBackgroundInfo from '../components/ImageBackgroundInfo';
+import PaymentFooter from '../components/PaymentFooter';
 
 const DetailsScreen = ({navigation, route}: any) => {
   const [fullDec, setFullDec] = useState(false);
@@ -32,8 +33,34 @@ const DetailsScreen = ({navigation, route}: any) => {
     (state: any) => state.deleteFromFavoriteList,
   );
 
+  const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
+  const addToCart = useStore((state: any) => state.addToCart);
   const ToggleFavourite = (favourite: boolean, type: string, id: string) => {
     favourite ? deleteFromFavoriteList(type, id) : addToFavoriteList(type, id);
+  };
+
+  const addToCartList = ({
+    id,
+    index,
+    name,
+    roasted,
+    imagelink_square,
+    special_ingredient,
+    type,
+    price,
+  }: any) => {
+    addToCart({
+      id,
+      index,
+      name,
+      roasted,
+      imagelink_square,
+      special_ingredient,
+      type,
+      prices: [{...price, quantity: 1}],
+    });
+    calculateCartPrice();
+    navigation.navigate('Cart');
   };
   return (
     <View style={styles.ScreenContainer}>
@@ -109,6 +136,22 @@ const DetailsScreen = ({navigation, route}: any) => {
             ))}
           </View>
         </View>
+        <PaymentFooter
+          price={price}
+          buttonPressHandler={() => {
+            addToCartList({
+              id: ItemOfIndex.id,
+              index: ItemOfIndex.index,
+              name: ItemOfIndex.name,
+              roasted: ItemOfIndex.roasted,
+              imagelink_square: ItemOfIndex.imagelink_square,
+              special_ingredient: ItemOfIndex.special_ingredient,
+              type: ItemOfIndex.type,
+              price: price,
+            });
+          }}
+          buttonTitle={'Add to Cart'}
+        />
       </ScrollView>
     </View>
   );
@@ -121,6 +164,7 @@ const styles = StyleSheet.create({
   },
   ScrollViewFlex: {
     flexGrow: 1,
+    justifyContent: 'space-between',
   },
   BottomContainer: {
     padding: SPACING.space_20,
@@ -155,6 +199,32 @@ const styles = StyleSheet.create({
   },
   SizeText: {
     fontFamily: FONTFAMILY.poppins_semibold,
+  },
+  AddToCartContainer: {
+    padding: SPACING.space_20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  PriceDetailContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  PriceText: {
+    color: COLORS.primaryOrangeHex,
+    fontFamily: FONTFAMILY.poppins_bold,
+    fontSize: FONTSIZE.size_16,
+  },
+  PriceLable: {
+    color: COLORS.primaryWhiteHex,
+    fontFamily: FONTFAMILY.poppins_regular,
+    fontSize: FONTSIZE.size_14,
+  },
+  AddToCartButton: {
+    width: 250,
+    backgroundColor: COLORS.primaryOrangeHex,
+    borderRadius: BORDERRADIUS.radius_20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 export default DetailsScreen;
