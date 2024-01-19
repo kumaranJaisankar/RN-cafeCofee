@@ -191,7 +191,6 @@ const HomeScreen = ({navigation}: any) => {
           contentContainerStyle={styles.FlatListConatiner}
           keyExtractor={item => item.id}
           renderItem={({item}) => {
-            console.log(item.name);
             return (
               <TouchableOpacity
                 onPress={() =>
@@ -230,7 +229,6 @@ const HomeScreen = ({navigation}: any) => {
           ]}
           keyExtractor={item => item.id}
           renderItem={({item}) => {
-            console.log(item.name);
             return (
               <TouchableOpacity
                 onPress={() =>
