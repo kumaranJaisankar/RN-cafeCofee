@@ -14,8 +14,16 @@
       "sha1": "3455b9a804fed85c996001bfbcc73e6034bdf528"
     },
     {
-      "path": "src/assets/app_images/key-chain.png",
-      "sha1": "9f8317dbd7686a2e26c0c0b18c619390767a2788"
+      "path": "src/assets/app_images/gpay.png",
+      "sha1": "039fbff59306d5e4300ef7614d796844345575af"
+    },
+    {
+      "path": "src/assets/app_images/paytmicon.png",
+      "sha1": "f052b8a5b2c3f43f440fd2cd928f1c84807b5e3f"
+    },
+    {
+      "path": "src/assets/app_images/phonepelogoicon.png",
+      "sha1": "2f4ee6f8186703c6377ec8cbbab3492a2a83a062"
     },
     {
       "path": "src/assets/app_images/user.png",

@@ -18,6 +18,7 @@ import HeaderBar from '../components/HeaderBar';
 import {useStore} from '../store/store';
 import ImageBackgroundInfo from '../components/ImageBackgroundInfo';
 import LinearGradient from 'react-native-linear-gradient';
+import EmptyListAnimation from '../components/EmptyListAnimation';
 
 const FavoritesScreen = ({navigation, route}: any) => {
   const FavoritesList = useStore((state: any) => state.FavoritesList);
@@ -37,7 +38,7 @@ const FavoritesScreen = ({navigation, route}: any) => {
         <View style={{flex: 1}}>
           <HeaderBar title="Favourites" />
           {FavoritesList.length == 0 ? (
-            <Text style={{color: COLORS.primaryWhiteHex}}>No Favourits</Text>
+            <EmptyListAnimation title="Favourite is Empty" />
           ) : (
             <View style={styles.FavouriteScrollContainer}>
               {FavoritesList.map((data: any) => (
@@ -58,7 +59,7 @@ const FavoritesScreen = ({navigation, route}: any) => {
                     id={data.id}
                     favourite={data.favourite}
                     name={data.name}
-                    special_ingridient={data.special_ingredient}
+                    special_ingredient={data.special_ingredient}
                     ingredients={data.ingredients}
                     average_rating={data.average_rating}
                     ratings_count={data.ratings_count}
