@@ -24,7 +24,7 @@ interface ImageBackgroundInfoProps {
   id: string;
   favourite: boolean;
   name: string;
-  special_ingridient: string;
+  special_ingredient: string;
   ingredients: string;
   average_rating: number;
   ratings_count: string;
@@ -40,7 +40,7 @@ const ImageBackgroundInfo: React.FC<ImageBackgroundInfoProps> = ({
   id,
   favourite,
   name,
-  special_ingridient,
+  special_ingredient,
   ingredients,
   average_rating,
   ratings_count,
@@ -93,7 +93,7 @@ const ImageBackgroundInfo: React.FC<ImageBackgroundInfoProps> = ({
               <View>
                 <Text style={styles.ItemTitleText}>{name}</Text>
                 <Text style={styles.ItemSubtitleText}>
-                  {special_ingridient}
+                  {special_ingredient}
                 </Text>
               </View>
               <View style={styles.InnerPropertyContainer}>

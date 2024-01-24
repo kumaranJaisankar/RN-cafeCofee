@@ -4,9 +4,9 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import {useStore} from '../store/store';
 import {
@@ -20,26 +20,28 @@ import ImageBackgroundInfo from '../components/ImageBackgroundInfo';
 import PaymentFooter from '../components/PaymentFooter';
 
 const DetailsScreen = ({navigation, route}: any) => {
-  const [fullDec, setFullDec] = useState(false);
   const ItemOfIndex = useStore((state: any) =>
     route.params.type == 'Coffee' ? state.CoffeeList : state.BeanList,
   )[route.params.index];
-  const BackHandler = () => navigation.pop();
-  const [price, setPrice] = useState(ItemOfIndex.prices[0]);
-
   const addToFavoriteList = useStore((state: any) => state.addToFavoriteList);
-
   const deleteFromFavoriteList = useStore(
     (state: any) => state.deleteFromFavoriteList,
   );
-
-  const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
   const addToCart = useStore((state: any) => state.addToCart);
+  const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
+
+  const [price, setPrice] = useState(ItemOfIndex.prices[0]);
+  const [fullDesc, setFullDesc] = useState(false);
+
   const ToggleFavourite = (favourite: boolean, type: string, id: string) => {
     favourite ? deleteFromFavoriteList(type, id) : addToFavoriteList(type, id);
   };
 
-  const addToCartList = ({
+  const BackHandler = () => {
+    navigation.pop();
+  };
+
+  const addToCarthandler = ({
     id,
     index,
     name,
@@ -62,6 +64,7 @@ const DetailsScreen = ({navigation, route}: any) => {
     calculateCartPrice();
     navigation.navigate('Cart');
   };
+
   return (
     <View style={styles.ScreenContainer}>
       <StatusBar backgroundColor={COLORS.primaryBlackHex} />
@@ -75,7 +78,7 @@ const DetailsScreen = ({navigation, route}: any) => {
           id={ItemOfIndex.id}
           favourite={ItemOfIndex.favourite}
           name={ItemOfIndex.name}
-          special_ingridient={ItemOfIndex.special_ingredient}
+          special_ingredient={ItemOfIndex.special_ingredient}
           ingredients={ItemOfIndex.ingredients}
           average_rating={ItemOfIndex.average_rating}
           ratings_count={ItemOfIndex.ratings_count}
@@ -83,30 +86,36 @@ const DetailsScreen = ({navigation, route}: any) => {
           BackHandler={BackHandler}
           ToggleFavourite={ToggleFavourite}
         />
-        <View style={styles.BottomContainer}>
-          <Text style={styles.descriptionTitle}>Description</Text>
-          {fullDec ? (
-            <TouchableWithoutFeedback onPress={() => setFullDec(!fullDec)}>
-              <Text style={styles.descriptionText}>
+
+        <View style={styles.FooterInfoArea}>
+          <Text style={styles.InfoTitle}>Description</Text>
+          {fullDesc ? (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setFullDesc(prev => !prev);
+              }}>
+              <Text style={styles.DescriptionText}>
                 {ItemOfIndex.description}
               </Text>
             </TouchableWithoutFeedback>
           ) : (
-            <TouchableWithoutFeedback>
-              <Text
-                style={styles.descriptionText}
-                numberOfLines={3}
-                onPress={() => setFullDec(prev => !prev)}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setFullDesc(prev => !prev);
+              }}>
+              <Text numberOfLines={3} style={styles.DescriptionText}>
                 {ItemOfIndex.description}
               </Text>
             </TouchableWithoutFeedback>
           )}
-          <Text style={styles.descriptionTitle}>Size</Text>
+          <Text style={styles.InfoTitle}>Size</Text>
           <View style={styles.SizeOuterContainer}>
             {ItemOfIndex.prices.map((data: any) => (
               <TouchableOpacity
-                onPress={() => setPrice(data)}
                 key={data.size}
+                onPress={() => {
+                  setPrice(data);
+                }}
                 style={[
                   styles.SizeBox,
                   {
@@ -127,7 +136,7 @@ const DetailsScreen = ({navigation, route}: any) => {
                       color:
                         data.size == price.size
                           ? COLORS.primaryOrangeHex
-                          : COLORS.primaryWhiteHex,
+                          : COLORS.secondaryLightGreyHex,
                     },
                   ]}>
                   {data.size}
@@ -138,8 +147,9 @@ const DetailsScreen = ({navigation, route}: any) => {
         </View>
         <PaymentFooter
           price={price}
+          buttonTitle="Add to Cart"
           buttonPressHandler={() => {
-            addToCartList({
+            addToCarthandler({
               id: ItemOfIndex.id,
               index: ItemOfIndex.index,
               name: ItemOfIndex.name,
@@ -150,7 +160,6 @@ const DetailsScreen = ({navigation, route}: any) => {
               price: price,
             });
           }}
-          buttonTitle={'Add to Cart'}
         />
       </ScrollView>
     </View>
@@ -166,20 +175,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'space-between',
   },
-  BottomContainer: {
+  FooterInfoArea: {
     padding: SPACING.space_20,
   },
-  descriptionTitle: {
-    color: COLORS.primaryWhiteHex,
+  InfoTitle: {
     fontFamily: FONTFAMILY.poppins_semibold,
     fontSize: FONTSIZE.size_16,
+    color: COLORS.primaryWhiteHex,
     marginBottom: SPACING.space_10,
   },
-  descriptionText: {
+  DescriptionText: {
     letterSpacing: 0.5,
-    color: COLORS.primaryWhiteHex,
     fontFamily: FONTFAMILY.poppins_regular,
     fontSize: FONTSIZE.size_14,
+    color: COLORS.primaryWhiteHex,
     marginBottom: SPACING.space_30,
   },
   SizeOuterContainer: {
@@ -190,41 +199,16 @@ const styles = StyleSheet.create({
   },
   SizeBox: {
     flex: 1,
-    borderWidth: 2,
-    borderRadius: BORDERRADIUS.radius_10,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: COLORS.primaryDarkGreyHex,
-    padding: SPACING.space_10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: SPACING.space_24 * 2,
+    borderRadius: BORDERRADIUS.radius_10,
+    borderWidth: 2,
   },
   SizeText: {
-    fontFamily: FONTFAMILY.poppins_semibold,
-  },
-  AddToCartContainer: {
-    padding: SPACING.space_20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  PriceDetailContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  PriceText: {
-    color: COLORS.primaryOrangeHex,
-    fontFamily: FONTFAMILY.poppins_bold,
-    fontSize: FONTSIZE.size_16,
-  },
-  PriceLable: {
-    color: COLORS.primaryWhiteHex,
-    fontFamily: FONTFAMILY.poppins_regular,
-    fontSize: FONTSIZE.size_14,
-  },
-  AddToCartButton: {
-    width: 250,
-    backgroundColor: COLORS.primaryOrangeHex,
-    borderRadius: BORDERRADIUS.radius_20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    fontFamily: FONTFAMILY.poppins_medium,
   },
 });
+
 export default DetailsScreen;

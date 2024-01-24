@@ -49,7 +49,7 @@ const getCoffeeList = (category: string, data: any) => {
 };
 const HomeScreen = ({navigation}: any) => {
   const CoffeeList = useStore((state: any) => state.CoffeeList);
-  const BeansList = useStore((state: any) => state.BeansList);
+  const BeansList = useStore((state: any) => state.BeanList);
   const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
   const addToCart = useStore((state: any) => state.addToCart);
   const [categories, setCategories] = useState(
@@ -90,7 +90,7 @@ const HomeScreen = ({navigation}: any) => {
     setSortedCoffee([...CoffeeList]);
     setSearchText('');
   };
-  const CoffeeCartAddToCart = ({
+  const CoffeCardAddToCart = ({
     id,
     index,
     name,
@@ -234,12 +234,12 @@ const HomeScreen = ({navigation}: any) => {
                   id={item.id}
                   index={item.index}
                   type={item.type}
-                  rosted={item.rosted}
+                  rosted={item.roasted}
                   imagelink_square={item.imagelink_square}
                   special_ingredient={item.special_ingredient}
                   average_rating={item.average_rating}
                   price={item.prices[2]}
-                  buttonPressHandler={CoffeeCartAddToCart}
+                  buttonPressHandler={CoffeCardAddToCart}
                 />
               </TouchableOpacity>
             );
@@ -272,12 +272,12 @@ const HomeScreen = ({navigation}: any) => {
                   id={item.id}
                   index={item.index}
                   type={item.type}
-                  rosted={item.rosted}
+                  rosted={item.roasted}
                   imagelink_square={item.imagelink_square}
                   special_ingredient={item.special_ingredient}
                   average_rating={item.average_rating}
                   price={item.prices[2]}
-                  buttonPressHandler={CoffeeCartAddToCart}
+                  buttonPressHandler={CoffeCardAddToCart}
                 />
               </TouchableOpacity>
             );

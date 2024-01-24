@@ -9,7 +9,7 @@ export const useStore = create(
   persist(
     (set, get) => ({
       CoffeeList: CoffeeData,
-      BeansList: BeansData,
+      BeanList: BeansData,
       CartPrice: 0,
       FavoritesList: [],
       CartList: [],
@@ -19,34 +19,31 @@ export const useStore = create(
           produce(state => {
             let found = false;
             for (let i = 0; i < state.CartList.length; i++) {
-              if (state.CartList.length > 1) {
-                if (state.CartList[i].id == cartItem.id) {
-                  found = true;
-                  let size = false;
-                  for (let j = 0; j < state.CartList[i].prices.length; j++) {
-                    if (
-                      state.CartList[i].prices[j].size ==
-                      cartItem.prices[0].size
-                    ) {
-                      size = true;
-                      state.CartList[i].prices[j].quantity++;
-                      break;
-                    }
+              if (state.CartList[i].id == cartItem.id) {
+                found = true;
+                let size = false;
+                for (let j = 0; j < state.CartList[i].prices.length; j++) {
+                  if (
+                    state.CartList[i].prices[j].size == cartItem.prices[0].size
+                  ) {
+                    size = true;
+                    state.CartList[i].prices[j].quantity++;
+                    break;
                   }
-                  if (size == false) {
-                    state.CartList[i].prices.push(cartItem.prices[0]);
-                  }
-                  state.CartList[i].prices.sort((a: any, b: any) => {
-                    if (a.size > b.size) {
-                      return -1;
-                    }
-                    if (a.size < b.size) {
-                      return 1;
-                    }
-                    return 0;
-                  });
-                  break;
                 }
+                if (size == false) {
+                  state.CartList[i].prices.push(cartItem.prices[0]);
+                }
+                state.CartList[i].prices.sort((a: any, b: any) => {
+                  if (a.size > b.size) {
+                    return -1;
+                  }
+                  if (a.size < b.size) {
+                    return 1;
+                  }
+                  return 0;
+                });
+                break;
               }
             }
             if (found == false) {
@@ -116,7 +113,7 @@ export const useStore = create(
                   break;
                 }
               }
-            } else if (type == 'Bean') {
+            } else if (type == 'Beans') {
               for (let i = 0; i < state.BeanList.length; i++) {
                 if (state.BeanList[i].id == id) {
                   if (state.BeanList[i].favourite == true) {
