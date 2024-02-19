@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect, useContext} from 'react';
 import {useStore} from '../store/store';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {ScreenContainer} from 'react-native-screens';
@@ -24,6 +24,8 @@ import {
 import HeaderBar from '../components/HeaderBar';
 import CustomIcons from '../components/CustomIcons';
 import CoffeeCard from '../components/CoffeeCard';
+import {productLists} from '../services/coffeApis';
+import {Context} from '../context/globalContext';
 
 const getCategoriesFormDate = (data: any) => {
   let temp: any = {};
@@ -48,6 +50,8 @@ const getCoffeeList = (category: string, data: any) => {
   }
 };
 const HomeScreen = ({navigation}: any) => {
+  const globalContext: any = useContext(Context);
+  const {productList} = globalContext;
   const CoffeeList = useStore((state: any) => state.CoffeeList);
   const BeansList = useStore((state: any) => state.BeanList);
   const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
@@ -60,8 +64,12 @@ const HomeScreen = ({navigation}: any) => {
     index: 0,
     category: categories[0],
   });
-  const [sortedCoffee, setSortedCoffee] = useState(
-    getCoffeeList(categoryIndex.category, CoffeeList),
+  // const [sortedCoffee, setSortedCoffee] = useState(
+  //   getCoffeeList(categoryIndex.category, CoffeeList),
+  // );
+  const [sortedCoffee, setSortedCoffee] = useState(productList);
+  const [sordedCoffeeData, setSortedCoffeeData] = useState(
+    getCoffeeList(categoryIndex.category, productList),
   );
   const listRef: any = useRef<FlatList>();
   const tabBarHight = useBottomTabBarHeight();
@@ -117,6 +125,7 @@ const HomeScreen = ({navigation}: any) => {
       ToastAndroid.CENTER,
     );
   };
+
   return (
     <View style={styles.ScreenContainer}>
       <StatusBar backgroundColor={COLORS.primaryBlackHex} />
@@ -130,7 +139,7 @@ const HomeScreen = ({navigation}: any) => {
         </Text>
         {/* Seach input */}
         <View style={styles.InputContainerComponent}>
-          <TouchableOpacity onPress={() => searchCoffee(searchText)}>
+          <TouchableOpacity onPress={() => console.log('resss')}>
             <CustomIcons
               style={{marginHorizontal: SPACING.space_20}}
               name="search"
@@ -184,8 +193,8 @@ const HomeScreen = ({navigation}: any) => {
                     offset: 0,
                   });
                   setCategoryindex({index: index, category: data});
-                  setSortedCoffee([
-                    ...getCoffeeList(categories[index], CoffeeList),
+                  setSortedCoffeeData([
+                    ...getCoffeeList(categories[index], productList),
                   ]);
                 }}>
                 <Text
@@ -216,7 +225,7 @@ const HomeScreen = ({navigation}: any) => {
           }
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={sortedCoffee}
+          data={sordedCoffeeData}
           contentContainerStyle={styles.FlatListConatiner}
           keyExtractor={item => item.id}
           renderItem={({item}) => {
@@ -238,7 +247,9 @@ const HomeScreen = ({navigation}: any) => {
                   imagelink_square={item.imagelink_square}
                   special_ingredient={item.special_ingredient}
                   average_rating={item.average_rating}
-                  price={item.prices[2]}
+                  price={`${item.prices.at(0).price}-${
+                    item.prices.at(item.prices.length - 1).price
+                  }`}
                   buttonPressHandler={CoffeCardAddToCart}
                 />
               </TouchableOpacity>

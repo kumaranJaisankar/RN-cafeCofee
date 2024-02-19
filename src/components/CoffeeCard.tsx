@@ -18,6 +18,7 @@ import {
 } from '../theme/theme';
 import CustomIcons from './CustomIcons';
 import BgIcon from './BgIcon';
+import {Price} from '../context/globalContext';
 
 const CARD_WIDTH = Dimensions.get('window').width * 0.3;
 
@@ -26,7 +27,7 @@ interface CoffeeCardProps {
   index: number;
   type: string;
   rosted: string;
-  imagelink_square: ImageProps;
+  imagelink_square: string;
   name: string;
   special_ingredient: string;
   average_rating: number;
@@ -45,6 +46,7 @@ const CoffeeCard: React.FC<CoffeeCardProps> = ({
   price,
   buttonPressHandler,
 }) => {
+  console.log(imagelink_square);
   return (
     <LinearGradient
       start={{x: 0, y: 0}}
@@ -52,7 +54,7 @@ const CoffeeCard: React.FC<CoffeeCardProps> = ({
       style={styles.CardLinearGradientContainer}
       colors={[COLORS.primaryGreyHex, COLORS.primaryBlackHex]}>
       <ImageBackground
-        source={imagelink_square}
+        source={{uri: `${imagelink_square}`}}
         style={styles.CardImageBG}
         resizeMode="cover">
         <View style={styles.CardRatingContainer}>
@@ -68,7 +70,11 @@ const CoffeeCard: React.FC<CoffeeCardProps> = ({
       <Text style={styles.cardCoffeeImgredientText}>{special_ingredient}</Text>
       <View style={styles.CardFooterRow}>
         <Text style={styles.CardPriceText}>
-          ₹ <Text style={{color: COLORS.primaryWhiteHex}}>{price.price}</Text>
+          ₹{' '}
+          <Text
+            style={{
+              color: COLORS.primaryWhiteHex,
+            }}>{`${price}`}</Text>
         </Text>
         <TouchableOpacity
           onPress={() =>
