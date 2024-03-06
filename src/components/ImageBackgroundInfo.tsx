@@ -19,7 +19,7 @@ import CustomIcons from './CustomIcons';
 
 interface ImageBackgroundInfoProps {
   EnableBackHandler: boolean;
-  imagelink_portrait: ImageProps;
+  imagelink_portrait: string;
   type: string;
   id: string;
   favourite: boolean;
@@ -27,7 +27,7 @@ interface ImageBackgroundInfoProps {
   special_ingredient: string;
   ingredients: string;
   average_rating: number;
-  ratings_count: string;
+  rating_counts: string;
   roasted: string;
   BackHandler?: any;
   ToggleFavourite: any;
@@ -43,7 +43,7 @@ const ImageBackgroundInfo: React.FC<ImageBackgroundInfoProps> = ({
   special_ingredient,
   ingredients,
   average_rating,
-  ratings_count,
+  rating_counts,
   roasted,
   BackHandler,
   ToggleFavourite,
@@ -51,7 +51,7 @@ const ImageBackgroundInfo: React.FC<ImageBackgroundInfoProps> = ({
   return (
     <View>
       <ImageBackground
-        source={imagelink_portrait}
+        source={{uri: imagelink_portrait}}
         style={styles.ItemBackgroundImage}>
         {EnableBackHandler ? (
           <View style={styles.ImageHeaderBarContainerWithBack}>
@@ -139,7 +139,7 @@ const ImageBackgroundInfo: React.FC<ImageBackgroundInfoProps> = ({
                     styles.ItemRatingCount,
                     {color: COLORS.primaryWhiteHex},
                   ]}>
-                  ({ratings_count})
+                  ({rating_counts})
                 </Text>
               </View>
               <View style={styles.RoastedContainer}>

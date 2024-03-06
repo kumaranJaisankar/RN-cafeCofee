@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   ScrollView,
@@ -25,7 +26,10 @@ import HeaderBar from '../components/HeaderBar';
 import CustomIcons from '../components/CustomIcons';
 import CoffeeCard from '../components/CoffeeCard';
 import {productLists} from '../services/coffeApis';
-import {Context} from '../context/globalContext';
+import {Context, useProductContext} from '../context/globalContext';
+import AppLoader from '../components/AppLoader';
+import {useCafeStore} from '../store/cafeStore';
+import axios from 'axios';
 
 const getCategoriesFormDate = (data: any) => {
   let temp: any = {};
@@ -50,27 +54,70 @@ const getCoffeeList = (category: string, data: any) => {
   }
 };
 const HomeScreen = ({navigation}: any) => {
-  const globalContext: any = useContext(Context);
-  const {productList} = globalContext;
-  const CoffeeList = useStore((state: any) => state.CoffeeList);
-  const BeansList = useStore((state: any) => state.BeanList);
-  const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
-  const addToCart = useStore((state: any) => state.addToCart);
+  const globalContext: any = useProductContext();
+  const coffeeLists = useCafeStore((state: any) => state.coffeeDatas);
+  const beanLists = useCafeStore((state: any) => state.beansDatas);
+  const getCoffeeData = useCafeStore((state: any) => state.getCoffeeData);
+  const {productList, cat, fetchData, isLoading} = globalContext;
+
+  // const coffeeListFromProduct: any = coffeeLists.filter(
+  //   (val: any) => val.type == 'Coffee',
+  // );
   const [categories, setCategories] = useState(
-    getCategoriesFormDate(CoffeeList),
+    getCategoriesFormDate(coffeeLists),
   );
-  const [searchText, setSearchText] = useState('');
   const [categoryIndex, setCategoryindex] = useState({
     index: 0,
     category: categories[0],
   });
+  const [sordedCoffeeData, setSortedCoffeeData] = useState(
+    getCoffeeList(categoryIndex.category, coffeeLists),
+  );
+
+  useEffect(() => {
+    async function fun() {
+      const url = `http://10.0.2.2:8000/product/coffee`;
+
+      fetch(url, {method: 'GET'})
+        .then(res => {
+          if (res.status == 200) {
+            return res.json();
+          } else {
+            throw res.json();
+          }
+        })
+        .then(json => {
+          // setSortedCoffee(json);
+          console.log(json);
+          const coffeeListFromProduct: any = json.filter(
+            (val: any) => val.type == 'Coffee',
+          );
+          const beanListFromProduct: any = json.filter(
+            (val: any) => val.type == 'Beans',
+          );
+          getCoffeeData(coffeeListFromProduct, beanListFromProduct);
+          setCategories(getCategoriesFormDate(coffeeListFromProduct));
+          setSortedCoffeeData(
+            getCoffeeList(categoryIndex.category, coffeeListFromProduct),
+          );
+        })
+        .catch(e => console.log('dd'));
+    }
+    fun();
+  }, []);
+
+  const CoffeeList = useStore((state: any) => state.CoffeeList);
+  const BeansList = useStore((state: any) => state.BeanList);
+  const calculateCartPrice = useStore((state: any) => state.calculateCartPrice);
+  const addToCart = useStore((state: any) => state.addToCart);
+
+  const [searchText, setSearchText] = useState('');
+
   // const [sortedCoffee, setSortedCoffee] = useState(
   //   getCoffeeList(categoryIndex.category, CoffeeList),
   // );
-  const [sortedCoffee, setSortedCoffee] = useState(productList);
-  const [sordedCoffeeData, setSortedCoffeeData] = useState(
-    getCoffeeList(categoryIndex.category, productList),
-  );
+  const [sortedCoffee, setSortedCoffee] = useState(coffeeLists);
+
   const listRef: any = useRef<FlatList>();
   const tabBarHight = useBottomTabBarHeight();
 
@@ -82,7 +129,7 @@ const HomeScreen = ({navigation}: any) => {
       });
       setCategoryindex({index: 0, category: categories[0]});
       setSortedCoffee([
-        ...CoffeeList.filter((item: any) =>
+        ...coffeeLists.filter((item: any) =>
           item.name.toLowerCase().includes(search.toLocaleLowerCase()),
         ),
       ]);
@@ -95,9 +142,20 @@ const HomeScreen = ({navigation}: any) => {
       offset: 0,
     });
     setCategoryindex({index: 0, category: categories[0]});
-    setSortedCoffee([...CoffeeList]);
+    setSortedCoffee([...coffeeLists]);
     setSearchText('');
   };
+
+  // useEffect(() => {
+  //   fetchData();
+  //   setCategories(getCategoriesFormDate(coffeeLists));
+  //   setSortedCoffeeData(
+  //     getCoffeeList(categoryIndex.category, coffeeListFromProduct),
+  //   );
+  //   console.log(coffeeListFromProduct);
+  //   console.log('coffeeListFromProduct');
+  // }, []);
+
   const CoffeCardAddToCart = ({
     id,
     index,
@@ -125,6 +183,9 @@ const HomeScreen = ({navigation}: any) => {
       ToastAndroid.CENTER,
     );
   };
+  // if (!sordedCoffeeData.length === 0) {
+  //   return <ActivityIndicator />;
+  // }
 
   return (
     <View style={styles.ScreenContainer}>
@@ -139,7 +200,7 @@ const HomeScreen = ({navigation}: any) => {
         </Text>
         {/* Seach input */}
         <View style={styles.InputContainerComponent}>
-          <TouchableOpacity onPress={() => console.log('resss')}>
+          <TouchableOpacity onPress={() => console.log(coffeeLists)}>
             <CustomIcons
               style={{marginHorizontal: SPACING.space_20}}
               name="search"
@@ -180,7 +241,7 @@ const HomeScreen = ({navigation}: any) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.CategoryScrollViewStyle}>
-          {categories.map((data, index) => (
+          {categories.map((data: any, index: number) => (
             <View
               key={index.toString()}
               style={styles.CategoryScrollViewContainer}>
@@ -194,7 +255,7 @@ const HomeScreen = ({navigation}: any) => {
                   });
                   setCategoryindex({index: index, category: data});
                   setSortedCoffeeData([
-                    ...getCoffeeList(categories[index], productList),
+                    ...getCoffeeList(categories[index], coffeeLists),
                   ]);
                 }}>
                 <Text
@@ -228,12 +289,12 @@ const HomeScreen = ({navigation}: any) => {
           data={sordedCoffeeData}
           contentContainerStyle={styles.FlatListConatiner}
           keyExtractor={item => item.id}
-          renderItem={({item}) => {
+          renderItem={({item, index}) => {
             return (
               <TouchableOpacity
                 onPress={() =>
                   navigation.push('Details', {
-                    index: item.index,
+                    index: index,
                     id: item.id,
                     type: item.type,
                   })
@@ -247,8 +308,11 @@ const HomeScreen = ({navigation}: any) => {
                   imagelink_square={item.imagelink_square}
                   special_ingredient={item.special_ingredient}
                   average_rating={item.average_rating}
-                  price={`${item.prices.at(0).price}-${
-                    item.prices.at(item.prices.length - 1).price
+                  price={`${
+                    item.prices != undefined && item.prices!.at(0).price
+                  }-${
+                    item.prices != undefined &&
+                    item.prices.at(item.prices!.length - 1).price
                   }`}
                   buttonPressHandler={CoffeCardAddToCart}
                 />
@@ -262,18 +326,18 @@ const HomeScreen = ({navigation}: any) => {
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={BeansList}
+          data={beanLists}
           contentContainerStyle={[
             styles.FlatListConatiner,
             {marginBottom: tabBarHight},
           ]}
           keyExtractor={item => item.id}
-          renderItem={({item}) => {
+          renderItem={({item, index}) => {
             return (
               <TouchableOpacity
                 onPress={() =>
                   navigation.push('Details', {
-                    index: item.index,
+                    index: index,
                     id: item.id,
                     type: item.type,
                   })
@@ -287,7 +351,12 @@ const HomeScreen = ({navigation}: any) => {
                   imagelink_square={item.imagelink_square}
                   special_ingredient={item.special_ingredient}
                   average_rating={item.average_rating}
-                  price={item.prices[2]}
+                  price={`${
+                    item.prices != undefined && item.prices!.at(0).price
+                  }-${
+                    item.prices != undefined &&
+                    item.prices.at(item.prices!.length - 1).price
+                  }`}
                   buttonPressHandler={CoffeCardAddToCart}
                 />
               </TouchableOpacity>

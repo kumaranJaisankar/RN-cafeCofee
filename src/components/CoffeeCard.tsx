@@ -18,7 +18,6 @@ import {
 } from '../theme/theme';
 import CustomIcons from './CustomIcons';
 import BgIcon from './BgIcon';
-import {Price} from '../context/globalContext';
 
 const CARD_WIDTH = Dimensions.get('window').width * 0.3;
 
@@ -46,7 +45,6 @@ const CoffeeCard: React.FC<CoffeeCardProps> = ({
   price,
   buttonPressHandler,
 }) => {
-  console.log(imagelink_square);
   return (
     <LinearGradient
       start={{x: 0, y: 0}}
